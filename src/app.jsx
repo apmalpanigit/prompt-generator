@@ -7,7 +7,7 @@ export default function App() {
       <header className="app-header">
         <h1>AI Photo Edit Prompt Generator</h1>
         <p className="subtitle">
-          Fill the form to build a grammatically-correct AI prompt for photo
+          Fill the form to build a grammatically correct AI prompt for photo
           editing.
         </p>
       </header>
