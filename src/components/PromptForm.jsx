@@ -643,6 +643,15 @@ export default function PromptForm() {
             <button onClick={() => copyPrompt()}>
               {copied ? "Copied!" : "Copy Prompt"}
             </button>
+            {copied && (
+              <button
+                onClick={() =>
+                  window.open("https://aistudio.google.com/", "_blank")
+                }
+              >
+                {"Open AI Studio"}
+              </button>
+            )}
           </div>
         </div>
       )}
