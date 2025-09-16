@@ -26,6 +26,7 @@ export default function PromptForm() {
   const [form, setForm] = useState(defaultForm);
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showAiStudioButton, setShowAiStudioButton] = useState(false);
 
   useEffect(() => {
     setCopied(false);
@@ -118,6 +119,7 @@ export default function PromptForm() {
       await navigator.clipboard.writeText(prompt + extra);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      setShowAiStudioButton(true);
     } catch (err) {
       console.error("Copy failed", err);
     }
@@ -643,7 +645,7 @@ export default function PromptForm() {
             <button onClick={() => copyPrompt()}>
               {copied ? "Copied!" : "Copy Prompt"}
             </button>
-            {copied && (
+            {showAiStudioButton && (
               <button
                 onClick={() =>
                   window.open("https://aistudio.google.com/", "_blank")
