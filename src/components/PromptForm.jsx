@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const defaultForm = {
-  gender: "male",
+  gender: "female",
   dress: "Saree",
   picType: "Retro/Vintage",
   posture: "standing",
@@ -72,23 +72,24 @@ export default function PromptForm() {
     if (values.pose && values.pose !== "natural")
       parts.push(`in a pose: ${values.pose}.`);
     if (values.emotion)
-      parts.push(`The emotion on face should be: ${values.emotion}.`);
+      parts.push(`The emotion on face should be: ${values.emotion},`);
     if (values.hairstyle && values.hairstyle !== "open")
-      parts.push(`Hairstyle: ${values.hairstyle}.`);
-    if (values.jewellery && values.jewellery !== "open")
+      parts.push(`with the hairstyle: ${values.hairstyle}.`);
+    if (values.jewellery && values.jewellery !== "none")
       parts.push(
         `The person should be wearing: ${values.jewellery} type of jewellery.`
       );
     if (values.beard && values.beard !== "none")
-      parts.push(`Facial hair: ${values.beard}.`);
+      parts.push(`Their Facial hair/beard should be ${values.beard},`);
     if (values.specs && values.specs !== "none")
-      parts.push(`Spectacles: ${values.specs}.`);
+      parts.push(`Wearing spectacles of type ${values.specs}.`);
     if (values.accessories && values.accessories !== "none")
       parts.push(`Accessories: ${values.accessories}.`);
 
-    if (values.background) parts.push(`Background: ${values.background}.`);
+    if (values.background)
+      parts.push(`The background of image should be: ${values.background}.`);
     if (values.environment)
-      parts.push(`Environment: ${values.environment.toLowerCase()}.`);
+      parts.push(`In the environment: ${values.environment.toLowerCase()}.`);
     if (values.light) parts.push(`Lighting: ${values.light}.`);
     if (values.cameraAngle) parts.push(`Camera angle: ${values.cameraAngle}.`);
     if (values.photoQuality)
