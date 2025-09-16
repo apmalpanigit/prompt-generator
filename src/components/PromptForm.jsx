@@ -97,7 +97,7 @@ export default function PromptForm() {
 
     parts.push(
       values.sameFace === "yes"
-        ? "Ensure the subject's face remains exactly the same (no face swaps or identity changes)."
+        ? "Ensure the subject's face remains exactly the same (no face swaps or identity changes). 100% same face features no alterations."
         : "Slight facial adjustments are allowed, but keep identity recognizably similar."
     );
 
