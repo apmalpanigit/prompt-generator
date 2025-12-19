@@ -1,129 +1,117 @@
 import React, { useState, useEffect } from "react";
 
+/* =======================
+   DEFAULT FORM STATE
+======================= */
 const defaultForm = {
+  subjectType: "single", // single | couple
   gender: "female",
+
   dress: "Saree",
-  picType: "Retro/Vintage",
+  maleDress: "Suit",
+  femaleDress: "Gown",
+
+  location: "Paris, France",
+  landmark: "Eiffel Tower",
+
+  picType: "Cinematic",
   posture: "standing",
   pose: "natural",
+  couplePose: "holding hands",
+
   emotion: "smile",
   clothColor: "multicolour",
-  background: "Beach",
+
   environment: "Sunny",
+  background: "City",
+
   sameFace: "yes",
+
   beard: "none",
   specs: "none",
   hairstyle: "open",
-  light: "soft",
-  accessories: "none",
+
+  light: "golden-hour",
   cameraAngle: "eye-level",
   photoQuality: "high-resolution",
+
+  accessories: [],
   filter: "none",
-  otherSpecs: "",
 };
 
+/* =======================
+   COMPONENT
+======================= */
 export default function PromptForm() {
   const [form, setForm] = useState(defaultForm);
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
-  const [showAiStudioButton, setShowAiStudioButton] = useState(false);
-
-  useEffect(() => {
-    setCopied(false);
-  }, [prompt]);
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  function articleFor(word) {
-    if (!word) return "a ";
-    return /^[aeiou]/i.test(word) ? "an " : "a ";
-  }
+  useEffect(() => {
+    setCopied(false);
+  }, [prompt]);
 
-  function buildPrompt(values) {
-    const parts = [];
-    const subject =
-      values.gender === "baby"
-        ? "a baby"
-        : values.gender === "female"
-        ? "a woman"
-        : "a man";
+  /* =======================
+     PROMPT BUILDER
+  ======================= */
+  function buildPrompt(v) {
+    const p = [];
 
-    parts.push(
-      `Edit the photo of ${subject} wearing ${articleFor(
-        values.dress
-      )}${values.dress.toLowerCase()}.`
-    );
-
-    if (values.theme) parts.push(`In a theme of ${values.theme}.`);
-
-    if (values.clothColor) {
-      if (values.clothColor.toLowerCase() === "multicolour") {
-        parts.push("The clothing is multicolour with harmonious tones.");
-      } else {
-        parts.push(`The clothing is ${values.clothColor.toLowerCase()}.`);
-      }
+    if (v.subjectType === "couple") {
+      p.push(
+        `Create an ultra-realistic cinematic travel photograph of a couple,
+        same facial features as reference images,
+        male wearing ${v.maleDress},
+        female wearing ${v.femaleDress},
+        ${v.couplePose},
+        in ${v.location}, near ${v.landmark}.`
+      );
+    } else {
+      p.push(
+        `Create an ultra-realistic cinematic travel photograph of a ${v.gender},
+        wearing ${v.dress},
+        standing in ${v.location}, near ${v.landmark}.`
+      );
     }
 
-    if (values.picType) parts.push(`Pic type should be ${values.picType}.`);
-    if (values.posture)
-      parts.push(`The Posture of person should be ${values.posture},`);
-    if (values.pose && values.pose !== "natural")
-      parts.push(`in a pose: ${values.pose}.`);
-    if (values.emotion)
-      parts.push(`The emotion on face should be: ${values.emotion},`);
-    if (values.hairstyle && values.hairstyle !== "open")
-      parts.push(`with the hairstyle: ${values.hairstyle}.`);
-    if (values.jewellery && values.jewellery !== "none")
-      parts.push(
-        `The person should be wearing: ${values.jewellery} type of jewellery.`
-      );
-    if (values.beard && values.beard !== "none")
-      parts.push(`Their Facial hair/beard should be ${values.beard},`);
-    if (values.specs && values.specs !== "none")
-      parts.push(`Wearing spectacles of type ${values.specs}.`);
-    if (values.accessories && values.accessories !== "none")
-      parts.push(`Accessories: ${values.accessories}.`);
-
-    if (values.background)
-      parts.push(`The background of image should be: ${values.background}.`);
-    if (values.environment)
-      parts.push(`In the environment: ${values.environment.toLowerCase()}.`);
-    if (values.light) parts.push(`Lighting: ${values.light}.`);
-    if (values.cameraAngle) parts.push(`Camera angle: ${values.cameraAngle}.`);
-    if (values.photoQuality)
-      parts.push(`Photo quality: ${values.photoQuality}.`);
-    if (values.filter && values.filter !== "none")
-      parts.push(`Apply ${values.filter} filter.`);
-
-    parts.push(
-      values.sameFace === "yes"
-        ? "Ensure the subject's face remains exactly the same (no face swaps or identity changes). 100% same face features no alterations."
-        : "Slight facial adjustments are allowed, but keep identity recognizably similar."
+    p.push(
+      `Photo style: ${v.picType},
+      posture: ${v.posture},
+      pose: ${v.pose},
+      emotion: ${v.emotion},
+      environment: ${v.environment},
+      background: ${v.background},
+      lighting: ${v.light},
+      camera angle: ${v.cameraAngle},
+      photo quality: ${v.photoQuality}.`
     );
 
-    parts.push(
-      "Deliver a high-resolution, natural-looking edit that preserves skin tones and texture, avoids over-smoothing, and retains fabric and hair detail."
+    p.push(
+      v.sameFace === "yes"
+        ? "Ensure 100% same face identity, no facial alteration."
+        : "Minor facial enhancement allowed while preserving identity."
     );
 
-    return parts.join(" ");
+    p.push(
+      "Photorealistic, DSLR quality, natural skin texture, realistic shadows, no distortion, no watermark, no text, no logo."
+    );
+
+    return p.join(" ");
   }
 
   function onGenerate(e) {
-    e && e.preventDefault();
+    e.preventDefault();
     setPrompt(buildPrompt(form));
   }
 
-  async function copyPrompt(extra = "") {
-    try {
-      await navigator.clipboard.writeText(prompt + extra);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      setShowAiStudioButton(true);
-    } catch (err) {
-      console.error("Copy failed", err);
-    }
+  async function copyPrompt() {
+    await navigator.clipboard.writeText(prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   function resetForm() {
@@ -131,531 +119,240 @@ export default function PromptForm() {
     setPrompt("");
   }
 
+  /* =======================
+     UI
+  ======================= */
   return (
-    <div className="prompt-container">
-      <div className="form-card">
-        <form onSubmit={onGenerate}>
-          {/* Gender */}
-          <div className="row">
-            <label>Gender</label>
-            <div className="options">
-              {["male", "female", "baby", "other"].map((g) => (
-                <button
-                  type="button"
-                  key={g}
-                  className={`opt ${form.gender === g ? "active" : ""}`}
-                  onClick={() => update("gender", g)}
-                >
-                  {g}
-                </button>
-              ))}
-              {form.gender === "other" && (
-                <input
-                  placeholder="Custom gender"
-                  onChange={(e) => update("gender", e.target.value)}
-                />
-              )}
-            </div>
-          </div>
+    <div style={{ maxWidth: 900, margin: "auto", padding: 20 }}>
+      <h2>AI Travel Prompt Generator</h2>
 
-          {/* Dress */}
-          <div className="row">
-            <label>Dress</label>
-            <div className="options">
-              {[
-                "Saree",
-                "Suite",
-                "Punjabi",
-                "Western",
-                "T-shirt",
-                "Jacket",
-                "Formal suit",
-                "Lehenga",
-                "Gown",
-                "other",
-              ].map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  className={`opt ${form.dress === d ? "active" : ""}`}
-                  onClick={() => update("dress", d)}
-                >
-                  {d}
-                </button>
-              ))}
-              {form.dress === "other" && (
-                <input
-                  placeholder="Custom dress"
-                  onChange={(e) => update("dress", e.target.value)}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="row">
-            <label>Trending themes</label>
-            <div className="options">
-              {[
-                "Navratri",
-                "Diwali",
-                "Fantasy",
-                "Fairy",
-                "Western",
-                "Maharashtrian",
-                "Gujrati",
-                "Rajasthani",
-                "South Indian",
-                "Punjabi",
-                "Kashmiri",
-                "other",
-              ].map((g) => (
-                <button
-                  type="button"
-                  key={g}
-                  className={`opt ${form.theme === g ? "active" : ""}`}
-                  onClick={() => update("theme", g)}
-                >
-                  {g}
-                </button>
-              ))}
-              {form.theme === "other" && (
-                <input
-                  placeholder="Custom theme"
-                  onChange={(e) => update("theme", e.target.value)}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Pic Type + Posture */}
-          <div className="row grid-2">
-            <div>
-              <label>Pic type</label>
-              <select
-                value={form.picType}
-                onChange={(e) => update("picType", e.target.value)}
-              >
-                {[
-                  "Retro/Vintage",
-                  "Modern",
-                  "Cinematic",
-                  "High-Fashion",
-                  "Editorial",
-                  "Portrait",
-                  "Street",
-                  "Black & White",
-                  "Fantasy",
-                  "Artistic",
-                  "Other",
-                ].map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Posture</label>
-              <select
-                value={form.posture}
-                onChange={(e) => update("posture", e.target.value)}
-              >
-                {[
-                  "standing",
-                  "seating",
-                  "running",
-                  "walking",
-                  "lying down",
-                  "dancing",
-                  "jumping",
-                  "other",
-                ].map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Pose + Emotion */}
-          <div className="row grid-2">
-            <div>
-              <label>Pose</label>
-              <select
-                value={form.pose}
-                onChange={(e) => update("pose", e.target.value)}
-              >
-                {[
-                  "natural",
-                  "hands-on-hips",
-                  "arms-crossed",
-                  "looking-away",
-                  "action",
-                  "looking-up",
-                  "side-profile",
-                  "sitting-relaxed",
-                ].map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Emotion</label>
-              <select
-                value={form.emotion}
-                onChange={(e) => update("emotion", e.target.value)}
-              >
-                {[
-                  "smile",
-                  "confuse",
-                  "angry",
-                  "happy",
-                  "serene",
-                  "excited",
-                  "neutral",
-                  "sad",
-                  "fearless",
-                  "romantic",
-                  "playful",
-                  "calm",
-                  "relaxed",
-                  "other",
-                ].map((e) => (
-                  <option key={e}>{e}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Cloth Colour */}
-          <div className="row">
-            <label>Cloth Colour</label>
-            <div className="options colors">
-              {[
-                "red",
-                "blue",
-                "green",
-                "yellow",
-                "black",
-                "white",
-                "purple",
-                "orange",
-                "pink",
-                "brown",
-                "grey",
-                "gold",
-                "silver",
-                "multicolour",
-                "other",
-              ].map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  className={`opt ${form.clothColor === c ? "active" : ""}`}
-                  onClick={() => update("clothColor", c)}
-                >
-                  {c}
-                </button>
-              ))}
-              {form.clothColor === "other" && (
-                <input
-                  placeholder="Custom color"
-                  onChange={(e) => update("clothColor", e.target.value)}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Background + Environment */}
-          <div className="row grid-2">
-            <div>
-              <label>Background</label>
-              <select
-                value={form.background}
-                onChange={(e) => update("background", e.target.value)}
-              >
-                {[
-                  "Beach",
-                  "Mountain",
-                  "Temple",
-                  "City",
-                  "Studio",
-                  "Forest",
-                  "Desert",
-                  "Castle",
-                  "Underwater",
-                  "Garden",
-                  "Other",
-                ].map((b) => (
-                  <option key={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Environment</label>
-              <select
-                value={form.environment}
-                onChange={(e) => update("environment", e.target.value)}
-              >
-                {[
-                  "Rainy",
-                  "Cloudy",
-                  "Sunny",
-                  "Foggy",
-                  "Night",
-                  "Sunset",
-                  "Snowy",
-                  "Golden-hour",
-                  "Stormy",
-                  "Other",
-                ].map((env) => (
-                  <option key={env}>{env}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Face */}
-          <div className="row">
-            <label>Should face remain exactly the same?</label>
-            <div className="options">
-              {["yes", "no"].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`opt ${form.sameFace === r ? "active" : ""}`}
-                  onClick={() => update("sameFace", r)}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="row">
-            <label>Jewellery</label>
-            <select
-              value={form.jewellery}
-              onChange={(e) => update("jewellery", e.target.value)}
+      <form onSubmit={onGenerate}>
+        {/* SUBJECT TYPE */}
+        <div>
+          <label>Subject Type</label>
+          <br />
+          {["single", "couple"].map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => update("subjectType", t)}
+              style={{
+                marginRight: 8,
+                background: form.subjectType === t ? "#ccc" : "",
+              }}
             >
-              {[
-                "none",
-                "fine",
-                "costume",
-                "fashion",
-                "traditional",
-                "vintage",
-                "statement",
-                "minimal",
-                "ethnic",
-                "bridal",
-                "handcrafted",
-                "floral",
-                "diamond",
-                "oxidized",
-                "pearl",
-                "gold",
-                "silver",
-                "platinum",
-                ,
-              ].map((x) => (
-                <option key={x}>{x}</option>
-              ))}
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* GENDER */}
+        {form.subjectType === "single" && (
+          <div>
+            <label>Gender</label>
+            <br />
+            {["male", "female"].map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => update("gender", g)}
+                style={{
+                  marginRight: 8,
+                  background: form.gender === g ? "#ccc" : "",
+                }}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* DRESS */}
+        {form.subjectType === "single" && (
+          <div>
+            <label>Dress</label>
+            <select
+              value={form.dress}
+              onChange={(e) => update("dress", e.target.value)}
+            >
+              {["Saree", "Suit", "Western", "Gown", "Casual", "Formal"].map(
+                (d) => (
+                  <option key={d}>{d}</option>
+                )
+              )}
             </select>
           </div>
+        )}
 
-          {/* Beard + Specs */}
-          <div className="row grid-2">
+        {form.subjectType === "couple" && (
+          <div style={{ display: "flex", gap: 10 }}>
             <div>
-              <label>Beard</label>
+              <label>Male Dress</label>
               <select
-                value={form.beard}
-                onChange={(e) => update("beard", e.target.value)}
+                value={form.maleDress}
+                onChange={(e) => update("maleDress", e.target.value)}
               >
-                {["none", "stubble", "short", "long", "full", "other"].map(
-                  (x) => (
-                    <option key={x}>{x}</option>
+                {[
+                  "Suit",
+                  "Tuxedo",
+                  "Jacket",
+                  "Casual Shirt",
+                  "Traditional",
+                ].map((d) => (
+                  <option key={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Female Dress</label>
+              <select
+                value={form.femaleDress}
+                onChange={(e) => update("femaleDress", e.target.value)}
+              >
+                {["Gown", "Dress", "Saree", "Lehenga", "Western Chic"].map(
+                  (d) => (
+                    <option key={d}>{d}</option>
                   )
                 )}
               </select>
             </div>
-            <div>
-              <label>Spectacles</label>
-              <select
-                value={form.specs}
-                onChange={(e) => update("specs", e.target.value)}
-              >
-                {[
-                  "none",
-                  "thin-frame",
-                  "thick-frame",
-                  "sunglasses",
-                  "other",
-                ].map((x) => (
-                  <option key={x}>{x}</option>
-                ))}
-              </select>
-            </div>
           </div>
+        )}
 
-          {/* Hairstyle */}
-          <div className="row">
-            <label>Hairstyle</label>
+        {/* LOCATION */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <div>
+            <label>Location</label>
             <select
-              value={form.hairstyle}
-              onChange={(e) => update("hairstyle", e.target.value)}
+              value={form.location}
+              onChange={(e) => update("location", e.target.value)}
             >
               {[
-                "open",
-                "ponytail",
-                "bun",
-                "braids",
-                "curly",
-                "short",
-                "pixie",
-                "bob-cut",
-                "mohawk",
-                "afro",
-                "long-straight",
-                "other",
-              ].map((h) => (
-                <option key={h}>{h}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Light */}
-          <div className="row">
-            <label>Light</label>
-            <select
-              value={form.light}
-              onChange={(e) => update("light", e.target.value)}
-            >
-              {[
-                "soft",
-                "hard",
-                "dramatic",
-                "golden-hour",
-                "backlit",
-                "studio",
-                "spotlight",
-                "neon",
-                "natural-window",
-                "cinematic",
+                "Paris, France",
+                "Santorini, Greece",
+                "Swiss Alps, Switzerland",
+                "Venice, Italy",
+                "Norway",
+                "Maldives",
+                "Bali, Indonesia",
+                "London, UK",
+                "New York, USA",
+                "Cappadocia, Turkey",
               ].map((l) => (
                 <option key={l}>{l}</option>
               ))}
             </select>
           </div>
-
-          {/* Accessories */}
-          <div className="row">
-            <label>Accessories</label>
-            <select
-              multiple
-              value={form.accessories}
-              onChange={(e) =>
-                update(
-                  "accessories",
-                  Array.from(e.target.selectedOptions, (option) => option.value)
-                )
-              }
-            >
-              {["none", "watch", "bracelet", "hat", "scarf", "other"].map(
-                (a) => (
-                  <option key={a}>{a}</option>
-                )
-              )}
-            </select>
+          <div>
+            <label>Landmark</label>
+            <input
+              value={form.landmark}
+              onChange={(e) => update("landmark", e.target.value)}
+              placeholder="Eiffel Tower, Alps, Blue Domes"
+            />
           </div>
+        </div>
 
-          {/* Camera Angle + Photo Quality */}
-          <div className="row grid-2">
-            <div>
-              <label>Camera Angle</label>
-              <select
-                value={form.cameraAngle}
-                onChange={(e) => update("cameraAngle", e.target.value)}
-              >
-                {[
-                  "eye-level",
-                  "low-angle",
-                  "high-angle",
-                  "close-up",
-                  "wide-shot",
-                  "aerial",
-                ].map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Photo Quality</label>
-              <select
-                value={form.photoQuality}
-                onChange={(e) => update("photoQuality", e.target.value)}
-              >
-                {[
-                  "high-resolution",
-                  "ultra-HD",
-                  "4K",
-                  "cinematic",
-                  "artistic",
-                ].map((q) => (
-                  <option key={q}>{q}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Filter */}
-          <div className="row">
-            <label>Photo Filter</label>
+        {/* COUPLE POSE */}
+        {form.subjectType === "couple" && (
+          <div>
+            <label>Couple Pose</label>
             <select
-              value={form.filter}
-              onChange={(e) => update("filter", e.target.value)}
+              value={form.couplePose}
+              onChange={(e) => update("couplePose", e.target.value)}
             >
               {[
-                "none",
-                "warm",
-                "cool",
-                "sepia",
-                "black-and-white",
-                "cinematic",
-                "vivid",
-                "retro",
-              ].map((f) => (
-                <option key={f}>{f}</option>
+                "holding hands",
+                "walking together",
+                "romantic close pose",
+                "looking at each other",
+                "hugging",
+              ].map((p) => (
+                <option key={p}>{p}</option>
               ))}
             </select>
           </div>
+        )}
 
-          {/* Actions */}
-          <div className="actions">
-            <button type="submit">Generate Prompt</button>
-            <button type="button" onClick={resetForm}>
-              Reset
+        {/* STYLE */}
+        <div>
+          <label>Photo Style</label>
+          <select
+            value={form.picType}
+            onChange={(e) => update("picType", e.target.value)}
+          >
+            {[
+              "Cinematic",
+              "Luxury Travel",
+              "Editorial",
+              "Portrait",
+              "High Fashion",
+            ].map((p) => (
+              <option key={p}>{p}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* LIGHT */}
+        <div>
+          <label>Lighting</label>
+          <select
+            value={form.light}
+            onChange={(e) => update("light", e.target.value)}
+          >
+            {[
+              "golden-hour",
+              "soft daylight",
+              "dramatic",
+              "night ambient",
+              "studio",
+            ].map((l) => (
+              <option key={l}>{l}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* SAME FACE */}
+        <div>
+          <label>Keep Same Face?</label>
+          <br />
+          {["yes", "no"].map((x) => (
+            <button
+              key={x}
+              type="button"
+              onClick={() => update("sameFace", x)}
+              style={{
+                marginRight: 8,
+                background: form.sameFace === x ? "#ccc" : "",
+              }}
+            >
+              {x}
             </button>
-          </div>
-        </form>
-      </div>
+          ))}
+        </div>
 
-      {/* Prompt Display */}
+        {/* ACTIONS */}
+        <div style={{ marginTop: 20 }}>
+          <button type="submit">Generate Prompt</button>
+          <button type="button" onClick={resetForm} style={{ marginLeft: 10 }}>
+            Reset
+          </button>
+        </div>
+      </form>
+
+      {/* OUTPUT */}
       {prompt && (
-        <div className="prompt-card">
+        <div style={{ marginTop: 30 }}>
           <h3>Generated Prompt</h3>
-          <textarea readOnly rows={8} value={prompt} />
-          <div className="actions">
-            <button onClick={() => copyPrompt()}>
-              {copied ? "Copied!" : "Copy Prompt"}
-            </button>
-            {showAiStudioButton && (
-              <button
-                onClick={() =>
-                  window.open("https://aistudio.google.com/", "_blank")
-                }
-              >
-                {"Open AI Studio"}
-              </button>
-            )}
-          </div>
+          <textarea
+            rows={8}
+            value={prompt}
+            readOnly
+            style={{ width: "100%" }}
+          />
+          <button onClick={copyPrompt} style={{ marginTop: 10 }}>
+            {copied ? "Copied!" : "Copy Prompt"}
+          </button>
         </div>
       )}
     </div>
