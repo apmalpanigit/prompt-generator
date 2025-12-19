@@ -665,7 +665,7 @@ export default function PromptForm() {
     if (!p) return "";
 
     if (type === "Couple") {
-      return `Create an ultra-realistic cinematic travel photograph set at ${p.location}. 
+      return `The face features should be exactly same, strictly no alteration in face features. Create an ultra-realistic cinematic travel photograph set at ${p.location}. 
 The couple is ${p.couplePose}, creating a ${p.mood} atmosphere. 
 The male is dressed in ${p.maleDress}, while the female wears ${p.femaleDress}. 
 The scene highlights ${p.scenery} within a ${p.nature} environment. 
@@ -673,7 +673,7 @@ Lighting is ${p.lighting}, captured from a ${p.angle}, resulting in ${p.style}.
 Both subjects display ${p.emotion}. Maintain exact facial identity with professional DSLR-level realism.`;
     }
 
-    return `Create an ultra-realistic cinematic travel photograph set at ${p.location}. 
+    return `The face features should be exactly same, strictly no alteration in face features. Create an ultra-realistic cinematic travel photograph set at ${p.location}. 
 The subject appears ${p.mood}, dressed in ${p.dress}. 
 The composition highlights ${p.scenery} within a ${p.nature} setting. 
 Lighting is ${p.lighting}, captured from a ${p.angle}, producing ${p.style}. 
