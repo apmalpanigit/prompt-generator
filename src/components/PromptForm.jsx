@@ -1,324 +1,283 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-/* =========================
-   MASTER PRESET STRUCTURE
-========================= */
+/* ======================================
+   DATA MODEL (FULL GLOBAL DATA)
+====================================== */
 
-const PRESETS = {
+const DATA = {
   Europe: {
-    Single: [
-      {
-        name: "Paris Luxury Solo",
-        location: "Paris – Eiffel Tower",
-        gender: "female",
-        dress: "Designer Gown",
-        style: "Cinematic luxury travel photography",
-        emotion: "soft confident smile",
-        lighting: "golden hour",
-        angle: "wide shot",
-      },
-      {
-        name: "Swiss Alps Explorer",
-        location: "Swiss Alps",
-        gender: "male",
-        dress: "Winter Trench Coat",
-        style: "Adventure cinematic photography",
-        emotion: "fearless",
-        lighting: "bright natural daylight",
-        angle: "wide landscape shot",
-      },
-      {
-        name: "Santorini Influencer",
-        location: "Santorini – Blue Domes",
-        gender: "female",
-        dress: "Luxury Maxi Dress",
-        style: "Instagram luxury travel photography",
-        emotion: "relaxed smile",
-        lighting: "sunset soft light",
-        angle: "wide angle",
-      },
-      {
-        name: "Rome Royal Portrait",
-        location: "Rome – Colosseum",
-        gender: "male",
-        dress: "Italian Suit",
-        style: "Royal editorial portrait",
-        emotion: "confident",
-        lighting: "dramatic daylight",
-        angle: "low angle",
-      },
-      {
-        name: "Venice Dreamy Solo",
-        location: "Venice – Grand Canal",
-        gender: "female",
-        dress: "Cape Gown",
-        style: "Romantic cinematic portrait",
-        emotion: "dreamy",
-        lighting: "soft daylight",
-        angle: "street level",
-      },
-    ],
-    Couple: [
-      {
-        name: "Paris Romantic Couple",
-        location: "Paris – Eiffel Tower",
-        maleDress: "Italian Suit",
-        femaleDress: "Designer Gown",
-        style: "Romantic cinematic travel photography",
-        emotion: "romantic smiles",
-        lighting: "golden hour",
-        angle: "wide shot",
-        couplePose: "holding hands",
-      },
-      {
-        name: "Santorini Honeymoon",
-        location: "Santorini – Blue Domes",
-        maleDress: "Luxury Blazer & Pants",
-        femaleDress: "Luxury Maxi Dress",
-        style: "Luxury honeymoon photography",
-        emotion: "joyful",
-        lighting: "sunset glow",
-        angle: "wide angle",
-        couplePose: "walking together",
-      },
-      {
-        name: "Swiss Snow Couple",
-        location: "Swiss Alps",
-        maleDress: "Winter Coat",
-        femaleDress: "Princess Dress",
-        style: "Snow fantasy photography",
-        emotion: "warm happiness",
-        lighting: "soft snowy daylight",
-        angle: "wide shot",
-        couplePose: "embracing",
-      },
-      {
-        name: "Venice Royal Couple",
-        location: "Venice – Grand Canal",
-        maleDress: "Royal Achkan",
-        femaleDress: "Designer Lehenga",
-        style: "Royal portrait photography",
-        emotion: "elegant confidence",
-        lighting: "soft daylight",
-        angle: "wide shot",
-        couplePose: "standing side by side",
-      },
-      {
-        name: "Rome Proposal Scene",
-        location: "Rome – Colosseum",
-        maleDress: "Formal Suit",
-        femaleDress: "Evening Gown",
-        style: "Proposal cinematic photography",
-        emotion: "emotional joy",
-        lighting: "sunset light",
-        angle: "wide cinematic shot",
-        couplePose: "proposal kneeling pose",
-      },
-    ],
+    France: {},
+    Italy: {},
+    Switzerland: {},
+    Greece: {},
+    Norway: {},
   },
 
   Asia: {
+    UAE: {},
+    Maldives: {},
+    Japan: {},
+    Indonesia: {},
+    India: {},
+  },
+
+  "North America": {
+    USA: {},
+    Canada: {},
+    Mexico: {},
+    Bahamas: {},
+    CostaRica: {},
+  },
+
+  "South America": {
+    Brazil: {},
+    Argentina: {},
+    Peru: {},
+    Chile: {},
+    Colombia: {},
+  },
+
+  Africa: {
+    Morocco: {},
+    Egypt: {},
+    Kenya: {},
+    SouthAfrica: {},
+    Tanzania: {},
+  },
+
+  "Australia & Oceania": {
+    Australia: {},
+    NewZealand: {},
+    Fiji: {},
+    BoraBora: {},
+    Tahiti: {},
+  },
+
+  Antarctica: {
+    Antarctica: {},
+  },
+};
+
+/* ======================================
+   PRESET GENERATOR (REUSED)
+====================================== */
+
+function createPresets(country, landmark) {
+  return {
     Single: [
       {
-        name: "Dubai Billionaire",
-        location: "Dubai – Burj Khalifa",
-        gender: "male",
-        dress: "Billionaire Casual Look",
-        style: "Luxury editorial photography",
-        emotion: "confident",
-        lighting: "luxury daylight",
-        angle: "low angle",
+        name: `${country} Luxury Solo`,
+        location: `${landmark}`,
+        mood: "Confident, aspirational",
+        scenery: "Iconic landmark scenery",
+        nature: "Premium travel environment",
+        lighting: "Soft golden daylight",
+        angle: "Wide cinematic shot",
+        dress: "Luxury travel outfit",
+        style: "Cinematic travel photography",
+        emotion: "Calm confident smile",
       },
       {
-        name: "Maldives Solo Queen",
-        location: "Maldives – Overwater Villas",
-        gender: "female",
-        dress: "Luxury Travel Outfit",
-        style: "Luxury travel photography",
-        emotion: "relaxed elegance",
-        lighting: "tropical soft light",
-        angle: "wide shot",
-      },
-      {
-        name: "Bali Spiritual",
-        location: "Bali – Temple",
-        gender: "female",
-        dress: "Indo-Western Outfit",
-        style: "Spiritual cinematic photography",
-        emotion: "peaceful",
-        lighting: "soft morning light",
-        angle: "wide shot",
-      },
-      {
-        name: "Tokyo Night Style",
-        location: "Tokyo – Neon Streets",
-        gender: "male",
-        dress: "Modern Streetwear",
-        style: "Cyberpunk street photography",
-        emotion: "cool confidence",
-        lighting: "neon night lights",
-        angle: "street level",
-      },
-      {
-        name: "Kashmir Snow Dream",
-        location: "Kashmir – Snow Valley",
-        gender: "female",
-        dress: "Winter Ethnic Dress",
-        style: "Snow cinematic portrait",
-        emotion: "soft smile",
-        lighting: "snow daylight",
-        angle: "wide shot",
+        name: `${country} Influencer Style`,
+        location: `${landmark}`,
+        mood: "Stylish, relaxed",
+        scenery: "Famous tourist location",
+        nature: "Urban elegance",
+        lighting: "Natural daylight",
+        angle: "Street candid",
+        dress: "Trendy fashion wear",
+        style: "Editorial photography",
+        emotion: "Relaxed confidence",
       },
     ],
     Couple: [
       {
-        name: "Maldives Honeymoon",
-        location: "Maldives – Overwater Villas",
-        maleDress: "Luxury Blazer",
-        femaleDress: "Luxury Maxi Dress",
-        style: "Honeymoon luxury photography",
-        emotion: "romantic",
-        lighting: "golden daylight",
-        angle: "wide shot",
-        couplePose: "hugging",
+        name: `${country} Romantic Couple`,
+        location: `${landmark}`,
+        mood: "Romantic, joyful",
+        scenery: "Iconic backdrop",
+        nature: "Dream travel destination",
+        lighting: "Golden hour glow",
+        angle: "Wide cinematic shot",
+        maleDress: "Classic suit",
+        femaleDress: "Designer gown",
+        couplePose: "Holding hands",
+        style: "Romantic cinematic photography",
+        emotion: "Joyful smiles",
       },
       {
-        name: "Bali Couple Retreat",
-        location: "Bali – Temple",
-        maleDress: "Linen Shirt & Pants",
-        femaleDress: "Boho Dress",
-        style: "Spiritual couple photography",
-        emotion: "calm happiness",
-        lighting: "soft daylight",
-        angle: "wide shot",
-        couplePose: "walking together",
-      },
-      {
-        name: "Dubai Luxury Couple",
-        location: "Dubai – Burj Khalifa",
-        maleDress: "Luxury Suit",
-        femaleDress: "Designer Gown",
-        style: "Luxury status photography",
-        emotion: "confident smiles",
-        lighting: "luxury daylight",
-        angle: "low angle",
-        couplePose: "standing confidently",
-      },
-      {
-        name: "Kashmir Romance",
-        location: "Kashmir – Valley",
-        maleDress: "Winter Coat",
-        femaleDress: "Winter Ethnic Dress",
-        style: "Romantic snow photography",
-        emotion: "warm love",
-        lighting: "snow daylight",
-        angle: "wide shot",
-        couplePose: "embracing",
-      },
-      {
-        name: "Thailand Beach Love",
-        location: "Phuket – Beach",
-        maleDress: "Casual Beachwear",
-        femaleDress: "Flowy Beach Dress",
-        style: "Beach romance photography",
-        emotion: "happy laughter",
-        lighting: "sunset glow",
-        angle: "wide beach shot",
-        couplePose: "walking barefoot",
+        name: `${country} Honeymoon`,
+        location: `${landmark}`,
+        mood: "Intimate, dreamy",
+        scenery: "Scenic luxury surroundings",
+        nature: "Premium travel location",
+        lighting: "Soft sunset light",
+        angle: "Wide romantic shot",
+        maleDress: "Luxury blazer",
+        femaleDress: "Flowy elegant dress",
+        couplePose: "Walking together",
+        style: "Luxury honeymoon photography",
+        emotion: "Deep love",
       },
     ],
-  },
-};
+  };
+}
 
-/* =========================
+/* ======================================
+   ATTACH PRESETS TO COUNTRIES
+====================================== */
+
+Object.keys(DATA).forEach((continent) => {
+  Object.keys(DATA[continent]).forEach((country) => {
+    DATA[continent][country] = createPresets(
+      country,
+      `${country} Famous Landmark`
+    );
+  });
+});
+
+/* ======================================
    COMPONENT
-========================= */
+====================================== */
 
 export default function PromptForm() {
-  const [continent, setContinent] = useState("");
   const [type, setType] = useState("");
+  const [continent, setContinent] = useState("");
+  const [country, setCountry] = useState("");
   const [preset, setPreset] = useState(null);
   const [prompt, setPrompt] = useState("");
+  const [copied, setCopied] = useState(false);
 
   function generatePrompt(p) {
     if (!p) return "";
 
-    if (p.maleDress) {
+    if (type === "Couple") {
       return `Create an ultra-realistic cinematic travel photograph set in ${p.location}. 
-The couple is styled elegantly, with the male wearing ${p.maleDress} and the female wearing ${p.femaleDress}. 
-They are captured in a ${p.couplePose} pose, expressing ${p.emotion}. 
-The scene uses ${p.lighting} lighting, shot from a ${p.angle}, resulting in ${p.style}. 
-Ensure the faces remain exactly the same as the reference images, with natural skin texture and high photographic realism.`;
+The couple is ${p.couplePose}, conveying a ${p.mood} atmosphere. 
+The male wears ${p.maleDress}, while the female wears ${p.femaleDress}. 
+The scene includes ${p.scenery}, surrounded by ${p.nature}. 
+Lighting is ${p.lighting}, captured from a ${p.angle}, resulting in ${p.style}. 
+Their expressions reflect ${p.emotion}. Maintain exact facial identity with DSLR-level realism.`;
     }
 
     return `Create an ultra-realistic cinematic travel photograph set in ${p.location}. 
-The subject is a ${p.gender}, dressed in ${p.dress}, expressing a ${p.emotion}. 
-The image is captured using ${p.lighting} lighting from a ${p.angle}, resulting in ${p.style}. 
-Ensure facial identity remains unchanged, with natural skin texture and professional DSLR quality.`;
+The subject appears ${p.mood}, dressed in ${p.dress}. 
+The surroundings feature ${p.scenery} with a ${p.nature} feel. 
+Lighting is ${p.lighting}, captured from a ${p.angle}, producing ${p.style}. 
+The expression conveys ${p.emotion}. Ensure facial identity remains unchanged with professional realism.`;
+  }
+
+  function copyText() {
+    navigator.clipboard.writeText(prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "auto", padding: 20 }}>
-      <h2>AI Dream Travel Preset Generator</h2>
+    <div style={{ maxWidth: 1100, margin: "auto", padding: 20 }}>
+      <h2>🌍 AI Dream Travel Album Generator</h2>
 
-      <h4>1️⃣ Select Continent</h4>
-      {Object.keys(PRESETS).map((c) => (
+      {/* STEP 1 */}
+      <h4>1️⃣ Select Type</h4>
+      {["Single", "Couple"].map((t) => (
         <button
-          key={c}
+          key={t}
+          style={{ marginRight: 10 }}
           onClick={() => {
-            setContinent(c);
-            setType("");
+            setType(t);
+            setContinent("");
+            setCountry("");
             setPreset(null);
+            setPrompt("");
           }}
         >
-          {c}
+          {t}
         </button>
       ))}
 
-      {continent && (
+      {/* STEP 2 */}
+      {type && (
         <>
-          <h4>2️⃣ Select Type</h4>
-          {["Single", "Couple"].map((t) => (
+          <h4>2️⃣ Select Continent</h4>
+          {Object.keys(DATA).map((c) => (
             <button
-              key={t}
+              key={c}
+              style={{ marginRight: 10, marginBottom: 5 }}
               onClick={() => {
-                setType(t);
+                setContinent(c);
+                setCountry("");
                 setPreset(null);
+                setPrompt("");
               }}
             >
-              {t}
+              {c}
             </button>
           ))}
         </>
       )}
 
-      {continent && type && (
+      {/* STEP 3 */}
+      {continent && (
         <>
-          <h4>3️⃣ Select Preset</h4>
-          {PRESETS[continent][type].map((p) => (
+          <h4>3️⃣ Select Country</h4>
+          {Object.keys(DATA[continent]).map((ct) => (
             <button
+              key={ct}
+              style={{ marginRight: 10, marginBottom: 5 }}
+              onClick={() => {
+                setCountry(ct);
+                setPreset(null);
+                setPrompt("");
+              }}
+            >
+              {ct}
+            </button>
+          ))}
+        </>
+      )}
+
+      {/* STEP 4 */}
+      {country && DATA[continent][country]?.[type] && (
+        <>
+          <h4>4️⃣ Select Preset</h4>
+          {DATA[continent][country][type].map((p) => (
+            <div
               key={p.name}
-              style={{ background: preset?.name === p.name ? "#ccc" : "" }}
               onClick={() => {
                 setPreset(p);
                 setPrompt(generatePrompt(p));
               }}
+              style={{
+                border: "1px solid #ccc",
+                padding: 12,
+                marginBottom: 10,
+                cursor: "pointer",
+                background: preset?.name === p.name ? "#eef" : "#fff",
+              }}
             >
-              {p.name}
-            </button>
+              <strong>{p.name}</strong>
+              <div>Mood: {p.mood}</div>
+              <div>Lighting: {p.lighting}</div>
+              <div>Scenery: {p.scenery}</div>
+            </div>
           ))}
         </>
       )}
 
+      {/* OUTPUT */}
       {prompt && (
         <>
-          <h3>Generated Prompt</h3>
+          <h3>🧠 Generated Prompt</h3>
           <textarea
             rows={10}
             style={{ width: "100%" }}
             value={prompt}
             readOnly
           />
+          <br />
+          <button onClick={copyText}>
+            {copied ? "Copied!" : "Copy Prompt"}
+          </button>
         </>
       )}
     </div>
