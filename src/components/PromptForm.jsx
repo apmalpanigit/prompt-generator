@@ -1,111 +1,187 @@
 import React, { useState, useEffect } from "react";
 
-/* =======================
-   DATA CONFIG
-======================= */
+/* ===============================
+   DRESSES
+================================ */
 
-// Male & Female Dresses
 const maleDresses = [
   "Tuxedo",
-  "Formal Suit",
+  "Italian Suit",
   "Three-piece Suit",
-  "Italian Linen Suit",
-  "Blazer with Trousers",
-  "Overcoat with Scarf",
-  "Leather Jacket",
+  "Luxury Blazer & Pants",
   "Winter Trench Coat",
-  "Casual Shirt & Chinos",
-  "Denim Jacket",
+  "Leather Jacket",
   "Sherwani",
-  "Nehru Jacket",
+  "Royal Achkan",
   "Kurta Pajama",
   "Pathani Suit",
-  "Traditional Ethnic Wear",
+  "Casual Elite Outfit",
+  "Billionaire Casual Look",
 ];
 
 const femaleDresses = [
-  "Evening Gown",
   "Designer Gown",
+  "Evening Gown",
+  "Luxury Maxi Dress",
   "Cocktail Dress",
-  "Maxi Dress",
-  "Summer Dress",
   "Western Chic Outfit",
-  "Formal Blazer Dress",
-  "Long Coat with Dress",
-  "Saree",
   "Silk Saree",
   "Designer Lehenga",
-  "Anarkali Suit",
+  "Royal Anarkali",
   "Indo-Western Outfit",
-  "Cape Dress",
+  "Cape Gown",
   "Luxury Travel Outfit",
+  "Princess Dress",
 ];
 
-// Premium Locations with auto-lighting
+/* ===============================
+   LOCATIONS (Premium & Difficult)
+================================ */
+
 const locations = [
-  { name: "Paris, France – Eiffel Tower", light: "golden-hour" },
-  { name: "Santorini, Greece – Blue Domes", light: "golden-hour" },
-  { name: "Swiss Alps – Snow Mountains", light: "soft daylight" },
-  { name: "Norway – Northern Lights", light: "cinematic aurora lighting" },
-  { name: "Antarctica – Ice Landscape", light: "cold natural daylight" },
-  { name: "Venice, Italy – Grand Canal", light: "soft daylight" },
-  { name: "Monaco – Luxury Yachts", light: "soft daylight" },
+  { name: "Paris – Eiffel Tower", light: "golden hour", angle: "wide shot" },
   {
-    name: "Cappadocia, Turkey – Hot Air Balloons",
-    light: "sunrise golden-hour",
+    name: "Santorini – Blue Domes",
+    light: "sunset soft light",
+    angle: "wide shot",
   },
-  { name: "Machu Picchu, Peru", light: "misty soft daylight" },
-  { name: "Iceland – Glaciers & Volcanoes", light: "dramatic cloudy light" },
-  { name: "Maldives – Overwater Villas", light: "soft tropical daylight" },
-  { name: "Bora Bora – Luxury Island", light: "golden-hour" },
-  { name: "Amalfi Coast, Italy", light: "warm daylight" },
-  { name: "Hallstatt, Austria", light: "soft daylight" },
-  { name: "Faroe Islands, Denmark", light: "dramatic moody light" },
-  { name: "Patagonia, Chile", light: "dramatic daylight" },
-  { name: "Lapland, Finland – Snow Village", light: "cinematic winter light" },
-  { name: "Seychelles – Private Beaches", light: "soft daylight" },
-  { name: "Dubai – Burj Khalifa", light: "luxury daylight" },
-  { name: "New York – Manhattan Skyline", light: "night ambient city lights" },
+  { name: "Swiss Alps", light: "bright daylight", angle: "aerial wide" },
+  {
+    name: "Norway – Northern Lights",
+    light: "aurora cinematic light",
+    angle: "wide shot",
+  },
+  { name: "Antarctica", light: "cold natural light", angle: "wide shot" },
+  {
+    name: "Venice – Grand Canal",
+    light: "soft daylight",
+    angle: "street level",
+  },
+  {
+    name: "Maldives – Overwater Villas",
+    light: "tropical soft light",
+    angle: "wide shot",
+  },
+  {
+    name: "Dubai – Burj Khalifa",
+    light: "luxury daylight",
+    angle: "low angle",
+  },
+  {
+    name: "New York – Manhattan Skyline",
+    light: "night city lights",
+    angle: "wide shot",
+  },
+  {
+    name: "Cappadocia – Hot Air Balloons",
+    light: "sunrise golden light",
+    angle: "aerial",
+  },
 ];
 
-// Preset Packs (High-conversion)
+/* ===============================
+   PRESET PACKS (WITH SUBSETS)
+================================ */
+
 const presetPacks = {
   "Paris Romantic": {
-    location: "Paris, France – Eiffel Tower",
+    category: "Romance",
+    bestFor: "Couples / Instagram",
+    targetCustomer: "Middle-class dreamers",
+    subjectType: "couple",
+    location: "Paris – Eiffel Tower",
     picType: "Cinematic",
     emotion: "romantic smile",
     couplePose: "holding hands",
+    maleDress: "Italian Suit",
+    femaleDress: "Designer Gown",
   },
-  "Norway Aurora": {
-    location: "Norway – Northern Lights",
-    picType: "Fantasy",
-    emotion: "awe",
-    couplePose: "looking at the sky",
-  },
-  "Santorini Luxury": {
-    location: "Santorini, Greece – Blue Domes",
-    picType: "Luxury Travel",
-    emotion: "elegant smile",
-    couplePose: "walking together",
-  },
+
   "Maldives Honeymoon": {
+    category: "Luxury Romance",
+    bestFor: "Honeymoon",
+    targetCustomer: "Newly married",
+    subjectType: "couple",
     location: "Maldives – Overwater Villas",
     picType: "Luxury Travel",
     emotion: "romantic",
     couplePose: "hugging",
+    maleDress: "Luxury Blazer & Pants",
+    femaleDress: "Luxury Maxi Dress",
+  },
+
+  "Royal King & Queen": {
+    category: "Royal",
+    bestFor: "Wedding / Profile",
+    targetCustomer: "Status seekers",
+    subjectType: "couple",
+    location: "Venice – Grand Canal",
+    picType: "Royal Portrait",
+    emotion: "confident",
+    couplePose: "standing royal posture",
+    maleDress: "Royal Achkan",
+    femaleDress: "Designer Lehenga",
+  },
+
+  "Norway Aurora Fantasy": {
+    category: "Fantasy",
+    bestFor: "Instagram Viral",
+    targetCustomer: "Youth / Influencers",
+    subjectType: "single",
+    gender: "female",
+    location: "Norway – Northern Lights",
+    picType: "Fantasy Cinematic",
+    emotion: "awe",
+    dress: "Cape Gown",
+  },
+
+  "Billionaire Lifestyle": {
+    category: "Luxury Status",
+    bestFor: "Profile / Branding",
+    targetCustomer: "Entrepreneurs",
+    subjectType: "single",
+    gender: "male",
+    location: "Dubai – Burj Khalifa",
+    picType: "Luxury Editorial",
+    emotion: "confident",
+    dress: "Billionaire Casual Look",
+  },
+
+  "Snow Princess": {
+    category: "Fantasy",
+    bestFor: "Reels / Girls",
+    targetCustomer: "Young women",
+    subjectType: "single",
+    gender: "female",
+    location: "Swiss Alps",
+    picType: "Fantasy Portrait",
+    emotion: "soft smile",
+    dress: "Princess Dress",
+  },
+
+  "Adventure Elite": {
+    category: "Adventure",
+    bestFor: "Reels",
+    targetCustomer: "Youth",
+    subjectType: "single",
+    gender: "male",
+    location: "Antarctica",
+    picType: "Adventure Cinematic",
+    emotion: "fearless",
+    dress: "Winter Trench Coat",
   },
 };
 
-/* =======================
+/* ===============================
    DEFAULT STATE
-======================= */
+================================ */
 
 const defaultForm = {
   subjectType: "single",
   gender: "female",
   dress: "",
-  maleDress: "Formal Suit",
-  femaleDress: "Designer Gown",
+  maleDress: "",
+  femaleDress: "",
   location: locations[0].name,
   picType: "Cinematic",
   posture: "standing",
@@ -113,65 +189,61 @@ const defaultForm = {
   couplePose: "holding hands",
   emotion: "smile",
   environment: "outdoor",
-  background: "cityscape",
+  background: "landscape",
   sameFace: "yes",
-  light: locations[0].light,
-  cameraAngle: "eye-level",
-  photoQuality: "ultra high-resolution",
+  light: "",
+  cameraAngle: "",
+  photoQuality: "ultra high resolution",
 };
 
-/* =======================
+/* ===============================
    COMPONENT
-======================= */
+================================ */
 
 export default function PromptForm() {
   const [form, setForm] = useState(defaultForm);
   const [prompt, setPrompt] = useState("");
-  const [copied, setCopied] = useState(false);
 
   function update(field, value) {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((p) => ({ ...p, [field]: value }));
   }
 
-  // Auto-update lighting when location changes
+  /* AUTO LIGHT & ANGLE BASED ON LOCATION */
   useEffect(() => {
     const loc = locations.find((l) => l.name === form.location);
     if (loc) {
       update("light", loc.light);
+      update("cameraAngle", loc.angle);
     }
   }, [form.location]);
 
-  /* =======================
-     PROMPT BUILDER
-  ======================= */
+  /* APPLY PRESET – AUTO FILL EVERYTHING */
+  function applyPreset(name) {
+    const preset = presetPacks[name];
+    setForm((prev) => ({ ...prev, ...preset }));
+  }
 
+  /* BUILD PROMPT */
   function buildPrompt(v) {
-    const p = [];
+    let p = [];
 
     if (v.subjectType === "couple") {
       p.push(
-        `Create an ultra-realistic cinematic travel photograph of a couple,
-        same facial identity as reference images,
+        `Ultra-realistic luxury travel photo of a couple at ${v.location},
         male wearing ${v.maleDress},
         female wearing ${v.femaleDress},
-        ${v.couplePose},
-        at ${v.location}.`
+        pose: ${v.couplePose}.`
       );
     } else {
       p.push(
-        `Create an ultra-realistic cinematic travel photograph of a ${v.gender},
-        wearing ${v.dress},
-        standing at ${v.location}.`
+        `Ultra-realistic luxury travel photo of a ${v.gender} at ${v.location},
+        wearing ${v.dress}.`
       );
     }
 
     p.push(
-      `Photo style: ${v.picType},
-      posture: ${v.posture},
-      pose: ${v.pose},
+      `Style: ${v.picType},
       emotion: ${v.emotion},
-      environment: ${v.environment},
-      background: ${v.background},
       lighting: ${v.light},
       camera angle: ${v.cameraAngle},
       photo quality: ${v.photoQuality}.`
@@ -179,183 +251,42 @@ export default function PromptForm() {
 
     p.push(
       v.sameFace === "yes"
-        ? "Ensure exact facial identity match. No face changes."
-        : "Minor facial enhancement allowed while preserving identity."
+        ? "Exact same face identity. No face change."
+        : "Minor enhancement allowed."
     );
 
     p.push(
-      "Photorealistic, DSLR quality, natural skin texture, realistic shadows, no blur, no distortion, no watermark, no logo, no text."
+      "DSLR quality, natural skin texture, cinematic depth, no blur, no watermark."
     );
 
     return p.join(" ");
   }
 
-  function onGenerate(e) {
-    e.preventDefault();
-    setPrompt(buildPrompt(form));
-  }
-
-  function applyPreset(name) {
-    const preset = presetPacks[name];
-    setForm((prev) => ({
-      ...prev,
-      ...preset,
-    }));
-  }
-
-  async function copyPrompt() {
-    await navigator.clipboard.writeText(prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  /* =======================
-     UI
-  ======================= */
-
   return (
     <div style={{ maxWidth: 900, margin: "auto", padding: 20 }}>
       <h2>AI Dream Travel Prompt Generator</h2>
 
-      {/* PRESET PACKS */}
-      <div style={{ marginBottom: 15 }}>
-        <h4>Preset Packs</h4>
-        {Object.keys(presetPacks).map((p) => (
-          <button
-            key={p}
-            onClick={() => applyPreset(p)}
-            style={{ marginRight: 8, marginBottom: 8 }}
-          >
-            {p}
-          </button>
-        ))}
-      </div>
+      <h4>Preset Packs</h4>
+      {Object.keys(presetPacks).map((p) => (
+        <button key={p} onClick={() => applyPreset(p)} style={{ margin: 5 }}>
+          {p}
+        </button>
+      ))}
 
-      <form onSubmit={onGenerate}>
-        <label>Subject Type</label>
-        <br />
-        {["single", "couple"].map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => update("subjectType", t)}
-            style={{
-              marginRight: 8,
-              background: form.subjectType === t ? "#ddd" : "",
-            }}
-          >
-            {t}
-          </button>
-        ))}
-
-        {form.subjectType === "single" && (
-          <>
-            <div>
-              <label>Gender</label>
-              <br />
-              {["male", "female"].map((g) => (
-                <button
-                  key={g}
-                  type="button"
-                  onClick={() => update("gender", g)}
-                  style={{
-                    marginRight: 8,
-                    background: form.gender === g ? "#ddd" : "",
-                  }}
-                >
-                  {g}
-                </button>
-              ))}
-            </div>
-
-            <div>
-              <label>Dress</label>
-              <select
-                value={form.dress}
-                onChange={(e) => update("dress", e.target.value)}
-              >
-                {(form.gender === "male" ? maleDresses : femaleDresses).map(
-                  (d) => (
-                    <option key={d}>{d}</option>
-                  )
-                )}
-              </select>
-            </div>
-          </>
-        )}
-
-        {form.subjectType === "couple" && (
-          <>
-            <label>Male Dress</label>
-            <select
-              value={form.maleDress}
-              onChange={(e) => update("maleDress", e.target.value)}
-            >
-              {maleDresses.map((d) => (
-                <option key={d}>{d}</option>
-              ))}
-            </select>
-
-            <label>Female Dress</label>
-            <select
-              value={form.femaleDress}
-              onChange={(e) => update("femaleDress", e.target.value)}
-            >
-              {femaleDresses.map((d) => (
-                <option key={d}>{d}</option>
-              ))}
-            </select>
-          </>
-        )}
-
-        <label>Location</label>
-        <select
-          value={form.location}
-          onChange={(e) => update("location", e.target.value)}
-        >
-          {locations.map((l) => (
-            <option key={l.name}>{l.name}</option>
-          ))}
-        </select>
-
-        <label>Photo Style</label>
-        <select
-          value={form.picType}
-          onChange={(e) => update("picType", e.target.value)}
-        >
-          {[
-            "Cinematic",
-            "Luxury Travel",
-            "Editorial",
-            "Portrait",
-            "High Fashion",
-            "Fantasy",
-          ].map((p) => (
-            <option key={p}>{p}</option>
-          ))}
-        </select>
-
-        <label>Lighting (Auto-suggested)</label>
-        <input value={form.light} readOnly />
-
-        <div style={{ marginTop: 15 }}>
-          <button type="submit">Generate Prompt</button>
-        </div>
-      </form>
+      <button
+        style={{ display: "block", marginTop: 20 }}
+        onClick={() => setPrompt(buildPrompt(form))}
+      >
+        Generate Prompt
+      </button>
 
       {prompt && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Generated Prompt</h3>
-          <textarea
-            rows={8}
-            value={prompt}
-            readOnly
-            style={{ width: "100%" }}
-          />
-          <button onClick={copyPrompt}>
-            {copied ? "Copied!" : "Copy Prompt"}
-          </button>
-        </div>
+        <textarea
+          rows={8}
+          style={{ width: "100%", marginTop: 20 }}
+          value={prompt}
+          readOnly
+        />
       )}
     </div>
   );
