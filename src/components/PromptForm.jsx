@@ -1,292 +1,325 @@
 import React, { useState, useEffect } from "react";
 
-/* ===============================
-   DRESSES
-================================ */
+/* =========================
+   MASTER PRESET STRUCTURE
+========================= */
 
-const maleDresses = [
-  "Tuxedo",
-  "Italian Suit",
-  "Three-piece Suit",
-  "Luxury Blazer & Pants",
-  "Winter Trench Coat",
-  "Leather Jacket",
-  "Sherwani",
-  "Royal Achkan",
-  "Kurta Pajama",
-  "Pathani Suit",
-  "Casual Elite Outfit",
-  "Billionaire Casual Look",
-];
-
-const femaleDresses = [
-  "Designer Gown",
-  "Evening Gown",
-  "Luxury Maxi Dress",
-  "Cocktail Dress",
-  "Western Chic Outfit",
-  "Silk Saree",
-  "Designer Lehenga",
-  "Royal Anarkali",
-  "Indo-Western Outfit",
-  "Cape Gown",
-  "Luxury Travel Outfit",
-  "Princess Dress",
-];
-
-/* ===============================
-   LOCATIONS (Premium & Difficult)
-================================ */
-
-const locations = [
-  { name: "Paris – Eiffel Tower", light: "golden hour", angle: "wide shot" },
-  {
-    name: "Santorini – Blue Domes",
-    light: "sunset soft light",
-    angle: "wide shot",
-  },
-  { name: "Swiss Alps", light: "bright daylight", angle: "aerial wide" },
-  {
-    name: "Norway – Northern Lights",
-    light: "aurora cinematic light",
-    angle: "wide shot",
-  },
-  { name: "Antarctica", light: "cold natural light", angle: "wide shot" },
-  {
-    name: "Venice – Grand Canal",
-    light: "soft daylight",
-    angle: "street level",
-  },
-  {
-    name: "Maldives – Overwater Villas",
-    light: "tropical soft light",
-    angle: "wide shot",
-  },
-  {
-    name: "Dubai – Burj Khalifa",
-    light: "luxury daylight",
-    angle: "low angle",
-  },
-  {
-    name: "New York – Manhattan Skyline",
-    light: "night city lights",
-    angle: "wide shot",
-  },
-  {
-    name: "Cappadocia – Hot Air Balloons",
-    light: "sunrise golden light",
-    angle: "aerial",
-  },
-];
-
-/* ===============================
-   PRESET PACKS (WITH SUBSETS)
-================================ */
-
-const presetPacks = {
-  "Paris Romantic": {
-    category: "Romance",
-    bestFor: "Couples / Instagram",
-    targetCustomer: "Middle-class dreamers",
-    subjectType: "couple",
-    location: "Paris – Eiffel Tower",
-    picType: "Cinematic",
-    emotion: "romantic smile",
-    couplePose: "holding hands",
-    maleDress: "Italian Suit",
-    femaleDress: "Designer Gown",
-  },
-
-  "Maldives Honeymoon": {
-    category: "Luxury Romance",
-    bestFor: "Honeymoon",
-    targetCustomer: "Newly married",
-    subjectType: "couple",
-    location: "Maldives – Overwater Villas",
-    picType: "Luxury Travel",
-    emotion: "romantic",
-    couplePose: "hugging",
-    maleDress: "Luxury Blazer & Pants",
-    femaleDress: "Luxury Maxi Dress",
-  },
-
-  "Royal King & Queen": {
-    category: "Royal",
-    bestFor: "Wedding / Profile",
-    targetCustomer: "Status seekers",
-    subjectType: "couple",
-    location: "Venice – Grand Canal",
-    picType: "Royal Portrait",
-    emotion: "confident",
-    couplePose: "standing royal posture",
-    maleDress: "Royal Achkan",
-    femaleDress: "Designer Lehenga",
+const PRESETS = {
+  Europe: {
+    Single: [
+      {
+        name: "Paris Luxury Solo",
+        location: "Paris – Eiffel Tower",
+        gender: "female",
+        dress: "Designer Gown",
+        style: "Cinematic luxury travel photography",
+        emotion: "soft confident smile",
+        lighting: "golden hour",
+        angle: "wide shot",
+      },
+      {
+        name: "Swiss Alps Explorer",
+        location: "Swiss Alps",
+        gender: "male",
+        dress: "Winter Trench Coat",
+        style: "Adventure cinematic photography",
+        emotion: "fearless",
+        lighting: "bright natural daylight",
+        angle: "wide landscape shot",
+      },
+      {
+        name: "Santorini Influencer",
+        location: "Santorini – Blue Domes",
+        gender: "female",
+        dress: "Luxury Maxi Dress",
+        style: "Instagram luxury travel photography",
+        emotion: "relaxed smile",
+        lighting: "sunset soft light",
+        angle: "wide angle",
+      },
+      {
+        name: "Rome Royal Portrait",
+        location: "Rome – Colosseum",
+        gender: "male",
+        dress: "Italian Suit",
+        style: "Royal editorial portrait",
+        emotion: "confident",
+        lighting: "dramatic daylight",
+        angle: "low angle",
+      },
+      {
+        name: "Venice Dreamy Solo",
+        location: "Venice – Grand Canal",
+        gender: "female",
+        dress: "Cape Gown",
+        style: "Romantic cinematic portrait",
+        emotion: "dreamy",
+        lighting: "soft daylight",
+        angle: "street level",
+      },
+    ],
+    Couple: [
+      {
+        name: "Paris Romantic Couple",
+        location: "Paris – Eiffel Tower",
+        maleDress: "Italian Suit",
+        femaleDress: "Designer Gown",
+        style: "Romantic cinematic travel photography",
+        emotion: "romantic smiles",
+        lighting: "golden hour",
+        angle: "wide shot",
+        couplePose: "holding hands",
+      },
+      {
+        name: "Santorini Honeymoon",
+        location: "Santorini – Blue Domes",
+        maleDress: "Luxury Blazer & Pants",
+        femaleDress: "Luxury Maxi Dress",
+        style: "Luxury honeymoon photography",
+        emotion: "joyful",
+        lighting: "sunset glow",
+        angle: "wide angle",
+        couplePose: "walking together",
+      },
+      {
+        name: "Swiss Snow Couple",
+        location: "Swiss Alps",
+        maleDress: "Winter Coat",
+        femaleDress: "Princess Dress",
+        style: "Snow fantasy photography",
+        emotion: "warm happiness",
+        lighting: "soft snowy daylight",
+        angle: "wide shot",
+        couplePose: "embracing",
+      },
+      {
+        name: "Venice Royal Couple",
+        location: "Venice – Grand Canal",
+        maleDress: "Royal Achkan",
+        femaleDress: "Designer Lehenga",
+        style: "Royal portrait photography",
+        emotion: "elegant confidence",
+        lighting: "soft daylight",
+        angle: "wide shot",
+        couplePose: "standing side by side",
+      },
+      {
+        name: "Rome Proposal Scene",
+        location: "Rome – Colosseum",
+        maleDress: "Formal Suit",
+        femaleDress: "Evening Gown",
+        style: "Proposal cinematic photography",
+        emotion: "emotional joy",
+        lighting: "sunset light",
+        angle: "wide cinematic shot",
+        couplePose: "proposal kneeling pose",
+      },
+    ],
   },
 
-  "Norway Aurora Fantasy": {
-    category: "Fantasy",
-    bestFor: "Instagram Viral",
-    targetCustomer: "Youth / Influencers",
-    subjectType: "single",
-    gender: "female",
-    location: "Norway – Northern Lights",
-    picType: "Fantasy Cinematic",
-    emotion: "awe",
-    dress: "Cape Gown",
-  },
-
-  "Billionaire Lifestyle": {
-    category: "Luxury Status",
-    bestFor: "Profile / Branding",
-    targetCustomer: "Entrepreneurs",
-    subjectType: "single",
-    gender: "male",
-    location: "Dubai – Burj Khalifa",
-    picType: "Luxury Editorial",
-    emotion: "confident",
-    dress: "Billionaire Casual Look",
-  },
-
-  "Snow Princess": {
-    category: "Fantasy",
-    bestFor: "Reels / Girls",
-    targetCustomer: "Young women",
-    subjectType: "single",
-    gender: "female",
-    location: "Swiss Alps",
-    picType: "Fantasy Portrait",
-    emotion: "soft smile",
-    dress: "Princess Dress",
-  },
-
-  "Adventure Elite": {
-    category: "Adventure",
-    bestFor: "Reels",
-    targetCustomer: "Youth",
-    subjectType: "single",
-    gender: "male",
-    location: "Antarctica",
-    picType: "Adventure Cinematic",
-    emotion: "fearless",
-    dress: "Winter Trench Coat",
+  Asia: {
+    Single: [
+      {
+        name: "Dubai Billionaire",
+        location: "Dubai – Burj Khalifa",
+        gender: "male",
+        dress: "Billionaire Casual Look",
+        style: "Luxury editorial photography",
+        emotion: "confident",
+        lighting: "luxury daylight",
+        angle: "low angle",
+      },
+      {
+        name: "Maldives Solo Queen",
+        location: "Maldives – Overwater Villas",
+        gender: "female",
+        dress: "Luxury Travel Outfit",
+        style: "Luxury travel photography",
+        emotion: "relaxed elegance",
+        lighting: "tropical soft light",
+        angle: "wide shot",
+      },
+      {
+        name: "Bali Spiritual",
+        location: "Bali – Temple",
+        gender: "female",
+        dress: "Indo-Western Outfit",
+        style: "Spiritual cinematic photography",
+        emotion: "peaceful",
+        lighting: "soft morning light",
+        angle: "wide shot",
+      },
+      {
+        name: "Tokyo Night Style",
+        location: "Tokyo – Neon Streets",
+        gender: "male",
+        dress: "Modern Streetwear",
+        style: "Cyberpunk street photography",
+        emotion: "cool confidence",
+        lighting: "neon night lights",
+        angle: "street level",
+      },
+      {
+        name: "Kashmir Snow Dream",
+        location: "Kashmir – Snow Valley",
+        gender: "female",
+        dress: "Winter Ethnic Dress",
+        style: "Snow cinematic portrait",
+        emotion: "soft smile",
+        lighting: "snow daylight",
+        angle: "wide shot",
+      },
+    ],
+    Couple: [
+      {
+        name: "Maldives Honeymoon",
+        location: "Maldives – Overwater Villas",
+        maleDress: "Luxury Blazer",
+        femaleDress: "Luxury Maxi Dress",
+        style: "Honeymoon luxury photography",
+        emotion: "romantic",
+        lighting: "golden daylight",
+        angle: "wide shot",
+        couplePose: "hugging",
+      },
+      {
+        name: "Bali Couple Retreat",
+        location: "Bali – Temple",
+        maleDress: "Linen Shirt & Pants",
+        femaleDress: "Boho Dress",
+        style: "Spiritual couple photography",
+        emotion: "calm happiness",
+        lighting: "soft daylight",
+        angle: "wide shot",
+        couplePose: "walking together",
+      },
+      {
+        name: "Dubai Luxury Couple",
+        location: "Dubai – Burj Khalifa",
+        maleDress: "Luxury Suit",
+        femaleDress: "Designer Gown",
+        style: "Luxury status photography",
+        emotion: "confident smiles",
+        lighting: "luxury daylight",
+        angle: "low angle",
+        couplePose: "standing confidently",
+      },
+      {
+        name: "Kashmir Romance",
+        location: "Kashmir – Valley",
+        maleDress: "Winter Coat",
+        femaleDress: "Winter Ethnic Dress",
+        style: "Romantic snow photography",
+        emotion: "warm love",
+        lighting: "snow daylight",
+        angle: "wide shot",
+        couplePose: "embracing",
+      },
+      {
+        name: "Thailand Beach Love",
+        location: "Phuket – Beach",
+        maleDress: "Casual Beachwear",
+        femaleDress: "Flowy Beach Dress",
+        style: "Beach romance photography",
+        emotion: "happy laughter",
+        lighting: "sunset glow",
+        angle: "wide beach shot",
+        couplePose: "walking barefoot",
+      },
+    ],
   },
 };
 
-/* ===============================
-   DEFAULT STATE
-================================ */
-
-const defaultForm = {
-  subjectType: "single",
-  gender: "female",
-  dress: "",
-  maleDress: "",
-  femaleDress: "",
-  location: locations[0].name,
-  picType: "Cinematic",
-  posture: "standing",
-  pose: "natural",
-  couplePose: "holding hands",
-  emotion: "smile",
-  environment: "outdoor",
-  background: "landscape",
-  sameFace: "yes",
-  light: "",
-  cameraAngle: "",
-  photoQuality: "ultra high resolution",
-};
-
-/* ===============================
+/* =========================
    COMPONENT
-================================ */
+========================= */
 
 export default function PromptForm() {
-  const [form, setForm] = useState(defaultForm);
+  const [continent, setContinent] = useState("");
+  const [type, setType] = useState("");
+  const [preset, setPreset] = useState(null);
   const [prompt, setPrompt] = useState("");
 
-  function update(field, value) {
-    setForm((p) => ({ ...p, [field]: value }));
-  }
+  function generatePrompt(p) {
+    if (!p) return "";
 
-  /* AUTO LIGHT & ANGLE BASED ON LOCATION */
-  useEffect(() => {
-    const loc = locations.find((l) => l.name === form.location);
-    if (loc) {
-      update("light", loc.light);
-      update("cameraAngle", loc.angle);
-    }
-  }, [form.location]);
-
-  /* APPLY PRESET – AUTO FILL EVERYTHING */
-  function applyPreset(name) {
-    const preset = presetPacks[name];
-    setForm((prev) => ({ ...prev, ...preset }));
-  }
-
-  /* BUILD PROMPT */
-  function buildPrompt(v) {
-    let p = [];
-
-    if (v.subjectType === "couple") {
-      p.push(
-        `Ultra-realistic luxury travel photo of a couple at ${v.location},
-        male wearing ${v.maleDress},
-        female wearing ${v.femaleDress},
-        pose: ${v.couplePose}.`
-      );
-    } else {
-      p.push(
-        `Ultra-realistic luxury travel photo of a ${v.gender} at ${v.location},
-        wearing ${v.dress}.`
-      );
+    if (p.maleDress) {
+      return `Create an ultra-realistic cinematic travel photograph set in ${p.location}. 
+The couple is styled elegantly, with the male wearing ${p.maleDress} and the female wearing ${p.femaleDress}. 
+They are captured in a ${p.couplePose} pose, expressing ${p.emotion}. 
+The scene uses ${p.lighting} lighting, shot from a ${p.angle}, resulting in ${p.style}. 
+Ensure the faces remain exactly the same as the reference images, with natural skin texture and high photographic realism.`;
     }
 
-    p.push(
-      `Style: ${v.picType},
-      emotion: ${v.emotion},
-      lighting: ${v.light},
-      camera angle: ${v.cameraAngle},
-      photo quality: ${v.photoQuality}.`
-    );
-
-    p.push(
-      v.sameFace === "yes"
-        ? "Exact same face identity. No face change."
-        : "Minor enhancement allowed."
-    );
-
-    p.push(
-      "DSLR quality, natural skin texture, cinematic depth, no blur, no watermark."
-    );
-
-    return p.join(" ");
+    return `Create an ultra-realistic cinematic travel photograph set in ${p.location}. 
+The subject is a ${p.gender}, dressed in ${p.dress}, expressing a ${p.emotion}. 
+The image is captured using ${p.lighting} lighting from a ${p.angle}, resulting in ${p.style}. 
+Ensure facial identity remains unchanged, with natural skin texture and professional DSLR quality.`;
   }
 
   return (
     <div style={{ maxWidth: 900, margin: "auto", padding: 20 }}>
-      <h2>AI Dream Travel Prompt Generator</h2>
+      <h2>AI Dream Travel Preset Generator</h2>
 
-      <h4>Preset Packs</h4>
-      {Object.keys(presetPacks).map((p) => (
-        <button key={p} onClick={() => applyPreset(p)} style={{ margin: 5 }}>
-          {p}
+      <h4>1️⃣ Select Continent</h4>
+      {Object.keys(PRESETS).map((c) => (
+        <button
+          key={c}
+          onClick={() => {
+            setContinent(c);
+            setType("");
+            setPreset(null);
+          }}
+        >
+          {c}
         </button>
       ))}
 
-      <button
-        style={{ display: "block", marginTop: 20 }}
-        onClick={() => setPrompt(buildPrompt(form))}
-      >
-        Generate Prompt
-      </button>
+      {continent && (
+        <>
+          <h4>2️⃣ Select Type</h4>
+          {["Single", "Couple"].map((t) => (
+            <button
+              key={t}
+              onClick={() => {
+                setType(t);
+                setPreset(null);
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </>
+      )}
+
+      {continent && type && (
+        <>
+          <h4>3️⃣ Select Preset</h4>
+          {PRESETS[continent][type].map((p) => (
+            <button
+              key={p.name}
+              style={{ background: preset?.name === p.name ? "#ccc" : "" }}
+              onClick={() => {
+                setPreset(p);
+                setPrompt(generatePrompt(p));
+              }}
+            >
+              {p.name}
+            </button>
+          ))}
+        </>
+      )}
 
       {prompt && (
-        <textarea
-          rows={8}
-          style={{ width: "100%", marginTop: 20 }}
-          value={prompt}
-          readOnly
-        />
+        <>
+          <h3>Generated Prompt</h3>
+          <textarea
+            rows={10}
+            style={{ width: "100%" }}
+            value={prompt}
+            readOnly
+          />
+        </>
       )}
     </div>
   );
